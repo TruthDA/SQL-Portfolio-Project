@@ -1,0 +1,98 @@
+/* Ques 1: Generate a table that consists of:
+Name, address_number, address_street_name, ssn and annual income Of 
+the 20 highest income earners in the DB. 
+*/
+
+
+select name, address_number, address_street_name, ssn
+from person;
+
+--top 20 highest income earners
+
+select * 
+from income
+where annual_income < (select max(annual_income) 
+from income where annual_income < (select max(annual_income) from income))  
+order by annual_income desc limit 20
+
+---left join
+
+select reveune.ssn, annual_income, NAME
+from income as reveune
+left join person as individual
+on reveune.ssn = individual.ssn
+
+
+
+/* Ques 2: Generate a summary table that reveals the different types of 
+cars(car_make), and how many people(count) owned them in the community
+*/
+ 
+select count(car_make) as number_of_cars, car_make
+from drivers_license
+group by car_make
+---group by 2
+
+select count (plate_number)
+from drivers_license
+left join person
+on person.id = drivers_license.id;
+
+
+
+
+
+/* Ques3: What crimes are the most rampant in the whole community?
+*/
+
+
+select *
+from crime_scene_report
+
+
+select  count (crime_type) as number_of_crime, crime_type
+from crime_scene_report
+group by crime_type
+
+
+select max(crime_type) as maximum_crime_type,
+       min(crime_type) as minimum_crime_type      
+from crime_scene_report
+
+select *
+from crime_scene_report
+where crime_type = 'theft'
+
+
+
+
+/* Ques 4: It’s good we get rid of the bad eggs in the city. Jeremy Bowers has confessed 
+who hired him.
+‘I was hired by a woman with a lot of money.
+I don't know her name but I know she's around 5'5" (65") or 5'7" (67"). 
+She has red hair and she drives a Tesla Model S. I know that she attended 
+the SQL Symphony Concert 3 times in December 2017.’
+*/
+
+select p.name, p.ssn, p.id, l.*
+from drivers_license l
+join person p on p.license_id = l.id
+where hair_color = 'red' and car_make = 'Tesla' and gender = 'female'
+
+--- I was hired by a woman with a lot of money
+select p.id, p.name, i.annual_income
+from income i
+join person p on i.ssn = p.ssn
+where i.ssn in (961388910, 337169072, 987756388)
+
+---- I know that she attended the SQL Symphony Concert 3 times in December 2017
+
+select p.name, e.event_name, e.date
+from facebook_event_checkin e
+join person p on e.person_id = p.id
+where p.id in (78881, 99716)
+--- Miranda priestly is the person that hired Jeremy Bowers
+
+select *
+from drivers_license
+where gender = 'female'and age > 50 and hair_color = 'red'
